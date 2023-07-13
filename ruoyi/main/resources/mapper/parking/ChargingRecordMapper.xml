@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ChargingRecordMapper">
+    
+    <resultMap type="ChargingRecord" id="ChargingRecordResult">
+        <result property="id"    column="id"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="fee"    column="fee"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectChargingRecordVo">
+        select id, customer_id, start_time, end_time, fee, status from charging_record
+    </sql>
+
+    <select id="selectChargingRecordList" parameterType="ChargingRecord" resultMap="ChargingRecordResult">
+        <include refid="selectChargingRecordVo"/>
+        <where>  
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="startTime != null "> and start_time = #{startTime}</if>
+            <if test="endTime != null "> and end_time = #{endTime}</if>
+            <if test="fee != null "> and fee = #{fee}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectChargingRecordById" parameterType="Long" resultMap="ChargingRecordResult">
+        <include refid="selectChargingRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertChargingRecord" parameterType="ChargingRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into charging_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">customer_id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="fee != null">fee,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">#{customerId},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="fee != null">#{fee},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateChargingRecord" parameterType="ChargingRecord">
+        update charging_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="fee != null">fee = #{fee},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteChargingRecordById" parameterType="Long">
+        delete from charging_record where id = #{id}
+    </delete>
+
+    <delete id="deleteChargingRecordByIds" parameterType="String">
+        delete from charging_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

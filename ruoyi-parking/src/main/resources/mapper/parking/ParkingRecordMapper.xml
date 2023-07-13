@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.ParkingRecordMapper">
+    
+    <resultMap type="ParkingRecord" id="ParkingRecordResult">
+        <result property="id"    column="id"    />
+        <result property="slotId"    column="slot_Id"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="fee"    column="fee"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectParkingRecordVo">
+        select id, slot_Id, customer_id, start_time, end_time, fee, status from parking_record
+    </sql>
+
+    <select id="selectParkingRecordList" parameterType="ParkingRecord" resultMap="ParkingRecordResult">
+        <include refid="selectParkingRecordVo"/>
+        <where>  
+            <if test="slotId != null "> and slot_Id = #{slotId}</if>
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="startTime != null "> and start_time = #{startTime}</if>
+            <if test="endTime != null "> and end_time = #{endTime}</if>
+            <if test="fee != null "> and fee = #{fee}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectParkingRecordById" parameterType="Long" resultMap="ParkingRecordResult">
+        <include refid="selectParkingRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertParkingRecord" parameterType="ParkingRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into parking_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="slotId != null">slot_Id,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="fee != null">fee,</if>
+            <if test="status != null and status != ''">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="slotId != null">#{slotId},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="fee != null">#{fee},</if>
+            <if test="status != null and status != ''">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateParkingRecord" parameterType="ParkingRecord">
+        update parking_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="slotId != null">slot_Id = #{slotId},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="fee != null">fee = #{fee},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteParkingRecordById" parameterType="Long">
+        delete from parking_record where id = #{id}
+    </delete>
+
+    <delete id="deleteParkingRecordByIds" parameterType="String">
+        delete from parking_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

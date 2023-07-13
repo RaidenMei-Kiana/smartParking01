@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.parking.mapper.CustomerMapper">
+    
+    <resultMap type="Customer" id="CustomerResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="licensePlate"    column="license_plate"    />
+        <result property="phone"    column="phone"    />
+        <result property="wechatOpenid"    column="wechat_openid"    />
+        <result property="balance"    column="balance"    />
+    </resultMap>
+
+    <sql id="selectCustomerVo">
+        select id, name, license_plate, phone, wechat_openid, balance from customer
+    </sql>
+
+    <select id="selectCustomerList" parameterType="Customer" resultMap="CustomerResult">
+        <include refid="selectCustomerVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="licensePlate != null  and licensePlate != ''"> and license_plate = #{licensePlate}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="wechatOpenid != null  and wechatOpenid != ''"> and wechat_openid = #{wechatOpenid}</if>
+            <if test="balance != null "> and balance = #{balance}</if>
+        </where>
+    </select>
+    
+    <select id="selectCustomerById" parameterType="Long" resultMap="CustomerResult">
+        <include refid="selectCustomerVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCustomer" parameterType="Customer" useGeneratedKeys="true" keyProperty="id">
+        insert into customer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="licensePlate != null and licensePlate != ''">license_plate,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="wechatOpenid != null">wechat_openid,</if>
+            <if test="balance != null">balance,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="licensePlate != null and licensePlate != ''">#{licensePlate},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="wechatOpenid != null">#{wechatOpenid},</if>
+            <if test="balance != null">#{balance},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomer" parameterType="Customer">
+        update customer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="licensePlate != null and licensePlate != ''">license_plate = #{licensePlate},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="wechatOpenid != null">wechat_openid = #{wechatOpenid},</if>
+            <if test="balance != null">balance = #{balance},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCustomerById" parameterType="Long">
+        delete from customer where id = #{id}
+    </delete>
+
+    <delete id="deleteCustomerByIds" parameterType="String">
+        delete from customer where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
